@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,700&display=swap" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="/static/css/SignInStyles.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <meta name="skyblue">
+  <link rel="icon" sizes="192x192" href="{{ url_for('static', filename='images/android-launchericon-192-192.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}" />
+  <link rel="apple-touch-icon" sizes="72x72" href="/static/images/icons/72x72.png">
+  <link rel="apple-touch-icon" sizes="96x96" href="/static/images/icons/96x96.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="/static/images/icons/128x128.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/static/images/icons/144x144.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/static/images/icons/192x192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="/static/images/icons/512x512.png">
+  
+
+  <title>TimeClock - Log In</title>
+
+</head>
+
+<body>
+  <div class="login-div">
+
+
+    <div style="background-image: url('/static/images/White Removed 400x400.png')" class="logo"></div>
+    <div class="title">Aktus M.U. Kreativ Pte Ltd</div>
+    <br>
+    <div class="fields">
+      <!-- LOGIN MODAL -->
+      <div id="modal-login" class="modal">
+        <div class="modal-content">
+          <form method="post" id="login-form" action="{{ url_for('log_in') }}">
+            <div class="msg"> {{ msg }} </div>
+            <div class="input-field">
+              <input class="pass-input" id="username" name="username" required="required" placeholder="Username" />
+            </div>
+            <div class="input-field">
+              <input class="pass-input" type="password" id="password" name="password" required="required" placeholder="Password" />
+            </div>
+            <br>
+            <br>
+            <div class="d-grid mb-2">
+                <button class="signin-button" type="submit">Log In</button>
+            </div>
+
+            <!-- Compiled and minified JavaScript -->
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+            <script src="/static/js/app.js"></script>
+            <!-- COMMENT OUT 4.21 <script src="js/index.js"></script>-->
+          </form>
+        </div>
+      </div>
+      <div class="link">
+        <a class="d-block mb-2 small" href="{{ url_for('forget') }}">Forgot Password</a> <a class="d-block mb-2 small" href="{{ url_for('sign_up') }}">Sign Up.</a>
+      </div>
+      <footer>
+        <div class="sub-title">&copy; 2022 Aktus M.U. Kreativ Pte Ltd</div>
+      </footer>
+    </div>
+  </div>  
+
+
+  
+
+</body>
+
+</html>

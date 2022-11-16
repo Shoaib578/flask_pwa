@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>TimeClock - Home</title>
+	<!-- materialize icons, css & js -->
+	<link type="text/css" href="/static/css/materialize.min.css" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+	<link type="text/css" href="/static/css/styles.css" rel="stylesheet" />
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCFrdfJoTnui_gz8jwFpXOQL89KaHRWqKc"></script>
+	<script type="text/javascript" src="/static/js/materialize.min.js"></script>
+	<link rel="icon" sizes="192x192" href="{{ url_for('static', filename='images/android-launchericon-192-192.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}" />
+	<!-- iOS Support -->
+	<link rel="apple-touch-icon" href="/static/images/icons/96x96.png" />
+	<meta name="apple-mobile-web-app-status-bar" content="#aa7700" />
+	<meta name="theme-color" content="#ffe1ce" />
+	<script type="text/javascript">
+	function startTime() {
+		var today=new Date();
+		var year = today.getFullYear()
+		var nummonth = today.getMonth()
+		var date = today.getDate()
+
+		var h=today.getHours();
+		var m=today.getMinutes();
+		var s=today.getSeconds();
+
+		// Add a zero in front of numbers < 10
+		m=checkTime(m);
+		s=checkTime(s);
+		var months = [ "January", "February", "March", "April", "May", "June",
+		   "July", "August", "September", "October", "November", "December" ];
+
+		var monthname = months[nummonth];
+		document.getElementById('time').innerHTML=monthname+" "+date+ "," +" "+year+", "+h+":"+m+":"+s;
+		t=setTimeout(function(){startTime()},500);
+	}
+
+    function checkTime(i) {
+        if (i<10)
+          {
+          i="0" + i;
+          }
+        return i;
+   }
+
+    // Retrieve coordinates and convert it to address with Google Maps API
+   var x = document.getElementById("test");
+   function getLocation(direction) {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(showPosition);
+		if (direction == 'clockin') {
+			document.getElementById("direction").value = "In"
+		}
+		else if (direction == "clockout") {
+			document.getElementById("direction").value = "Out"
+		}
+        } else {
+            document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
+        }
+   }
+
+   function showPosition(position) {
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+        var latlng = new google.maps.LatLng(latitude, longitude);
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ 'latLng': latlng },  (results, status) =>{
+            if (status !== google.maps.GeocoderStatus.OK) {
+                alert(status);
+            }
+            // If Google Maps API can retrieve address put results into form boxes (uneditable)
+            if (status == google.maps.GeocoderStatus.OK) {
+                var address = (results[0].formatted_address);
+                document.getElementById("address").value = address
+                document.getElementById("timeclocked").value = document.getElementById("time").innerHTML;
+            }
+        });
+   }
+
+   function clearValues() {
+        document.getElementById("address").value = "";
+        document.getElementById("timeclocked").value = "";
+   }
+	</script>
+</head>
+
+<body class="grey lighten-4" onload="startTime()">
+	<!-- top nav -->
+	<nav class="z-depth-0">
+		<div class="nav-wrapper container">
+			<a href="{{ url_for('home') }}">Time<span>Clock</span></a>
+			<span class="right grey-text text-darken-1">
+				<i class="material-icons sidenav-trigger" data-target="side-menu">menu</i>
+			</span>
+		</div>
+	</nav>
+
+	<div>
+		<h3></h3>
+		<div class="center">
+			<a class="btn-floating btn-small btn-large add-btn sidenav-trigger" data-target="side-form">
+				<i class="material-icons">add</i>
+			</a>
+		</div>
+	</div>
+
+	<!-- side nav -->
+	<ul id="side-menu" class="sidenav side-menu">
+		<li><a class="subheader">Aktus M.U. Kreativ Pte Ltd</a></li>
+		<li>
+			<div class="divider"></div>
+		</li>
+		<li><a href="{{ url_for('home') }}" class="waves-effect">Home</a></li>
+		<li><a href="{{ url_for('about_page') }}" class="waves-effect">Version: 220912</a></li>
+		<li><a href="{{ url_for('log_out') }}" class="waves-effect">Logout</a></li>
+		<li>
+			<div class="divider"></div>
+		</li>
+	</ul>
+
+	<!-- recipes -->
+	<div class="recipes container grey-text text-darken-1">
+		<!--<h6 class="center">DETAILS</h6>-->
+		<div id="time" class="powered"></div>
+		{% for i in range(0,len) %}
+		{% if 'In' in data[i]['direction'] %}
+		<div id="DOM" class="card-panel recipe white row" data-id="{{data[i]['id']}}" style="border-left: 8px solid green">
+			<img src="/static/images/time-card.png" alt="recipe thumb">
+			<div class="recipe-details">
+			  <div id="DOM" class="recipe-title">Time {{data[i]['direction']}}: {{data[i]['time']}}</div>
+			  <div id="DOM" class="recipe-ingredients">{{data[i]['location']}}</div>	  
+			</div>
+			<div id="DOM" class="recipe-delete">
+				<a  href="{{ url_for('delusertime', id = data[i]['id']) }}"><i class="material-icons" data-id="${id}">delete_outline</i></a>
+			</div>
+		</div>		
+		{% else %}
+		<div id="DOM" class="card-panel recipe white row" data-id="{{data[i]['id']}}" style="border-left: 8px solid red">
+			<img src="/static/images/time-card.png" alt="recipe thumb">
+			<div class="recipe-details">
+			  <div id="DOM" class="recipe-title">Time {{data[i]['direction']}}: {{data[i]['time']}}</div>
+			  <div id="DOM" class="recipe-ingredients">{{data[i]['location']}}</div>	  
+			</div>
+			<div id="DOM" class="recipe-delete">
+			  <a  href="{{ url_for('delusertime', id = data[i]['id']) }}"><i class="material-icons" data-id="${id}">delete_outline</i></a>
+			</div>
+		</div>
+		{% endif %}
+		{% endfor %}
+	</div>
+
+	<!-- add recipe side nav -->
+	<div id="side-form" class="sidenav side-form">
+		<!-- (onsubmit="setTimeout(function(){window.location.reload();},10);) added on 23/04/2021-->
+		<form id="theForm" action="{{ url_for('home') }}" method="post" class="add-recipe container section">
+			<h6>PUNCH CARD</h6>
+			<div class="center">
+				<div class="center">
+					<button id="clockin" type="button" class="btn-small" onclick="getLocation(this.id)">Clock In</button>
+					<button id="clockout" type="button" class="btn-small" onclick="getLocation(this.id)">Clock Out</button>
+				</div>
+			</div>
+			<!--Form -->
+			<div class="input-field">
+				<h5>Direction</h5>
+				<input placeholder="Clock In/ Out" id="direction" type="text" name="direction" required="required" onclick="disable()" readonly />
+			</div>
+			<div class="input-field">
+				<h5>TIME</h5>
+				<input placeholder="Time In/Out" id="timeclocked" type="text" name="timeclocked" required="required" onclick="disable()" readonly />
+			</div>
+
+			<div class="input-field">
+				<h5>LOCATION</h5>
+				<input placeholder="Location In/Out" id="address" type="text" name="address" required="required" readonly />
+			</div>
+
+			<!-- Confirm Button -->
+			<div class="input-field center">
+				<button id="no" type="reset" class="btn-small" onclick="disableSubmit()">NO</button>
+				<button id="yes" type="button" class="btn-small" onclick="confirmButton()">YES</button>
+			</div>
+
+
+			<!-- Submit Button -->
+			<div class="input-field center">
+				<button id="submitbutton" type="submit" class="btn-small" value="Submit" disabled="disabled">SUBMIT</button>
+
+			<!--$('#form-compra-tarjeta').on('submit', function(e){
+				$('.btn-confirmar').attr('disabled', true);
+				$('.btn-confirmar').html('Realizando compra... <i class="fas fa-spin fa-circle-notch"></i>');
+    		});   FOR IOS -->
+			</div>
+
+		</form>
+	</div>
+
+	<script src="/static/js/app.js"></script>
+	<script src="/static/js/ui.js"></script>
+</body>
+
+</html>
